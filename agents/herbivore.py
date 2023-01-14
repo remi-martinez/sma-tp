@@ -3,6 +3,9 @@ import random
 from pygame import Vector2
 
 from agents.agent import Agent
+from agents.superpredateur import SuperPredateur
+from bodies.carnivorebody import CarnivoreBody
+from bodies.decomposeurbody import DecomposeurBody
 from items.vegetal import Vegetal
 
 
@@ -22,7 +25,14 @@ class Herbivore(Agent):
 
         if len(manger) > 0:
             target = manger[0].position - self.body.position
-            self.body.acceleration = self.body.acceleration + target
+
+        if len(symbiose) > 0:
+            target = symbiose[0].position - self.body.position
+
+        if len(fuir) > 0:
+            target = self.body.position - fuir[0].position
+
+        self.body.acceleration = self.body.acceleration + target
 
     def filtrePerception(self):
         manger = []
@@ -31,8 +41,13 @@ class Herbivore(Agent):
 
         for i in self.body.fustrum.perceptionList:
             i.dist = self.body.position.distance_to(i.position)
-            if i.mort is False and isinstance(i, Vegetal):
-                manger.append(i)
+            if i.mort is False:
+                if isinstance(i, Vegetal):
+                    manger.append(i)
+                if isinstance(i, CarnivoreBody):
+                    fuir.append(i)
+                if isinstance(i, SuperPredateur):
+                    symbiose.append(i)
 
         manger.sort(key=lambda x: x.dist, reverse=False)
         return manger, fuir, symbiose

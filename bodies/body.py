@@ -35,10 +35,12 @@ class Body(object):
         self.date_naissance = time.time()
         self.esperance_vie = 60  # secondes
         self.mort = False
+        self.decomposition = 0
 
     def update(self):
         # Mort
         if self.mort is True:
+            self.label = None
             return
         elif self.date_naissance + self.esperance_vie <= time.time():
             self.mort = True
@@ -55,7 +57,7 @@ class Body(object):
             return
         else:
             self.dort = False
-            self.label = ''
+            self.label = None
 
         # Affamé
         if self.faim_valeur >= self.faim_max:
@@ -68,7 +70,7 @@ class Body(object):
 
         # Jauges
         if self.faim_valeur < self.faim_max:
-            self.faim_valeur += 0
+            self.faim_valeur += 1
         if self.fatigue_valeur < self.fatigue_max:
             self.fatigue_valeur += 1
         if self.reproduction_valeur < self.reproduction_max:
@@ -87,7 +89,7 @@ class Body(object):
         self.edge()
 
     def show(self):
-        if self.mort is False:
+        if self.mort is False or self.decomposition > 0:
             core.Draw.text(self.color, self.label, Vector2(self.position.x - 10, self.position.y - 30), taille=15)
         else:
             self.color = (138, 138, 138)
@@ -105,3 +107,9 @@ class Body(object):
 
     def kill(self):
         self.mort = True
+
+    def decomposer(self):
+        self.decomposition += 1
+        if self.decomposition > 100:
+            self.decomposition = 0
+
