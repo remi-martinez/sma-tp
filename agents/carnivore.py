@@ -3,9 +3,6 @@ import random
 from pygame import Vector2
 
 from agents.agent import Agent
-from bodies.decomposeurbody import DecomposeurBody
-from bodies.herbivorebody import HerbivoreBody
-from bodies.superpredateurbody import SuperPredateurBody
 
 
 class Carnivore(Agent):
@@ -35,7 +32,6 @@ class Carnivore(Agent):
         for i in self.body.fustrum.perceptionList:
             i.dist = self.body.position.distance_to(i.position)
             if i.mort is False:
-                print(i)
                 if i.type == 'Herbivore':
                     manger.append(i)
                 if i.type == 'SuperPredateur':

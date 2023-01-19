@@ -32,7 +32,6 @@ class Body(object):
 
         self.reproduction_max = 100
         self.reproduction_valeur = 0
-        self.reproduire = False
 
         self.date_naissance = time.time()
         self.esperance_vie = 60  # secondes
@@ -43,19 +42,19 @@ class Body(object):
         # Mort
         if self.mort is True:
             self.label = None
+            self.color = (138, 138, 138)
             return
         elif self.date_naissance + self.esperance_vie <= time.time():
-            self.mort = True
-            self.color = (138, 138, 138)
+            self.kill()
 
         # Dormir
         if self.dort is True and self.fatigue_valeur > 0:
+            self.label = 'Zzz...'
             self.fatigue_valeur -= 1
             return
 
         if self.fatigue_valeur >= self.fatigue_max:
             self.dort = True
-            self.label = 'Zzz...'
             return
         else:
             self.dort = False
@@ -74,7 +73,6 @@ class Body(object):
         if self.reproduction_valeur >= self.reproduction_max:
             self.reproduction()
             self.reproduction_valeur = 0
-            self.reproduire = True
 
         # Jauges
         if self.faim_valeur < self.faim_max:
@@ -97,13 +95,28 @@ class Body(object):
         self.edge()
 
     def show(self):
-        if self.mort is False or self.decomposition > 0:
-            core.Draw.text(self.color, self.label, Vector2(self.position.x - 10, self.position.y - 30), taille=15)
-        else:
+        if self.mort is True:
             self.color = (138, 138, 138)
+
+        self.show_text()
         core.Draw.circle(self.color, self.position, self.taille_body)
 
+    def show_text(self):
+        if self.mort is False or self.decomposition > 0:
+            core.Draw.text(self.color, self.label, Vector2(self.position.x - 10, self.position.y - 30), taille=15)
+
     def edge(self):
+        borders = [Vector2(0, self.position.y),
+                   Vector2(core.WINDOW_SIZE[0], self.position.y),
+                   Vector2(self.position.x, core.WINDOW_SIZE[1]),
+                   Vector2(self.position.x, 0)]
+
+        # Pour fuir les bords
+        for edge_position in borders:
+            if edge_position.distance_to(self.position) < self.fustrum.radius / 2:
+                self.acceleration = self.position - edge_position
+
+        # Pour revenir si le body sort de la fenêtre
         if self.position.x <= self.taille_body:
             self.vitesse.x *= -1
         if self.position.x + self.taille_body >= core.WINDOW_SIZE[0]:
@@ -131,4 +144,3 @@ class Body(object):
         self.decomposition += 1
         if self.decomposition > 100:
             self.decomposition = 0
-

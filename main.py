@@ -1,4 +1,5 @@
 import json
+import threading
 import time
 
 import core
@@ -12,8 +13,9 @@ from bodies.herbivorebody import HerbivoreBody
 from bodies.superpredateurbody import SuperPredateurBody
 from items.vegetal import Vegetal
 
-COLLISION_RADIUS = 20
+COLLISION_RADIUS = 10
 VALEUR_NUTRITIVE = 30
+SAVED_TIME = time.time()
 
 
 def setup():
@@ -27,22 +29,25 @@ def setup():
     core.memory("hearts", [])
     core.memory("timer", time.time())
 
-    # load("scenario.json")
+    load("scenario.json")
 
-    for i in range(0, 1):
+    for i in range(0, core.memory('scenario')['SuperPredateur']['nb']):
         core.memory('agents').append(SuperPredateur(SuperPredateurBody()))
 
-    # for i in range(0, 3):
-    #     core.memory('agents').append(Decomposeur(DecomposeurBody()))
-    #
-    # for i in range(0, 5):
-    #     core.memory('agents').append(Herbivore(HerbivoreBody()))
-    #
-    for i in range(0, 1):
+    for i in range(0, core.memory('scenario')['Carnivore']['nb']):
         core.memory('agents').append(Carnivore(CarnivoreBody()))
-    #
-    # for i in range(0, 10):
-    #     core.memory('items').append(Vegetal())
+
+    for i in range(0, core.memory('scenario')['Herbivore']['nb']):
+        core.memory('agents').append(Herbivore(HerbivoreBody()))
+
+    for i in range(0, core.memory('scenario')['Decomposeur']['nb']):
+        core.memory('agents').append(Decomposeur(DecomposeurBody()))
+
+    for i in range(0, core.memory('scenario')['Vegetal']['nb']):
+        core.memory('items').append(Vegetal())
+
+    # Démarrage d'un thread parallèle pour le graphique
+    threading.Thread(target=afficher_graph, args=()).start()
 
     print("Setup END-----------")
 
@@ -80,6 +85,7 @@ def update_environment():
                             if b.body.decomposition < 100:
                                 b.body.decomposer()
                             else:
+                                a.body.faim_valeur -= VALEUR_NUTRITIVE
                                 nouveau_vegetal = Vegetal()
                                 nouveau_vegetal.position = b.body.position
                                 core.memory('items').append(nouveau_vegetal)
@@ -101,6 +107,31 @@ def load(path):
     f = open(path)
     data = json.load(f)
     core.memory("scenario", data)
+    print("Scenario '" + path + "' loaded")
+
+
+def afficher_graph():
+    pass
+
+
+def pourcentage_population():
+    counts = {}
+    for agent in core.memory('agents'):
+        if agent.body.mort is False:
+            if agent.body.type not in counts:
+                counts[agent.body.type] = 0
+            counts[agent.body.type] += 1
+
+    # Afficher le pourcentage de chaque type d'agent
+    total = len([a for a in core.memory('agents') if a.body.mort is False])
+    for agent_type, count in counts.items():
+        percentage = count / total * 100
+        print(f"{agent_type}: {percentage:.2f}%")
+
+
+def meilleur_individu():
+    # TODO
+    return ''
 
 
 def run():
@@ -128,6 +159,14 @@ def run():
         heart.show()
 
     update_environment()
+
+    if time.time() - core.memory('timer') >= 1:
+        print("==== POPULATION ====")
+        pourcentage_population()
+
+        print("MEILLEUR INDIVIDU : " + meilleur_individu())
+
+        core.memory('timer', time.time())
 
 
 core.main(setup, run)
