@@ -14,14 +14,11 @@ class Carnivore(Agent):
         self.body.color = (102, 48, 0)
 
     def update(self):
-        manger, fuir, symbiose = self.filtrePerception()
+        manger, fuir = self.filtrePerception()
 
         target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
         while target.length() == 0:
             target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
-
-        if len(symbiose) > 0:
-            target = symbiose[0].position - self.body.position
 
         if len(manger) > 0:
             target = manger[0].position - self.body.position
@@ -29,25 +26,20 @@ class Carnivore(Agent):
         if len(fuir) > 0:
             target = self.body.position - fuir[0].position
 
-
         self.body.acceleration = self.body.acceleration + target
 
     def filtrePerception(self):
         manger = []
         fuir = []
-        symbiose = []
 
         for i in self.body.fustrum.perceptionList:
             i.dist = self.body.position.distance_to(i.position)
             if i.mort is False:
-                if isinstance(i, HerbivoreBody):
+                print(i)
+                if i.type == 'Herbivore':
                     manger.append(i)
-                if isinstance(i, SuperPredateurBody):
+                if i.type == 'SuperPredateur':
                     fuir.append(i)
-                # if isinstance(i, DecomposeurBody):
-                #     symbiose.append(i)
 
         manger.sort(key=lambda x: x.dist, reverse=False)
-        return manger, fuir, symbiose
-
-
+        return manger, fuir

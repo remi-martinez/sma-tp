@@ -1,6 +1,5 @@
+import json
 import time
-
-import pygame
 
 import core
 from agents.carnivore import Carnivore
@@ -11,10 +10,11 @@ from bodies.carnivorebody import CarnivoreBody
 from bodies.decomposeurbody import DecomposeurBody
 from bodies.herbivorebody import HerbivoreBody
 from bodies.superpredateurbody import SuperPredateurBody
-from heart import Heart
 from items.vegetal import Vegetal
 
 COLLISION_RADIUS = 20
+VALEUR_NUTRITIVE = 30
+
 
 def setup():
     print("Setup START---------")
@@ -27,22 +27,22 @@ def setup():
     core.memory("hearts", [])
     core.memory("timer", time.time())
 
+    # load("scenario.json")
+
     for i in range(0, 1):
         core.memory('agents').append(SuperPredateur(SuperPredateurBody()))
 
-    for i in range(0, 3):
-        core.memory('agents').append(Decomposeur(DecomposeurBody()))
-
-    for i in range(0, 5):
-        core.memory('agents').append(Herbivore(HerbivoreBody()))
-
-    for i in range(0, 5):
+    # for i in range(0, 3):
+    #     core.memory('agents').append(Decomposeur(DecomposeurBody()))
+    #
+    # for i in range(0, 5):
+    #     core.memory('agents').append(Herbivore(HerbivoreBody()))
+    #
+    for i in range(0, 1):
         core.memory('agents').append(Carnivore(CarnivoreBody()))
-
-    for i in range(0, 10):
-        core.memory('items').append(Vegetal())
-
-    core.memory('hearts').append(Heart())
+    #
+    # for i in range(0, 10):
+    #     core.memory('items').append(Vegetal())
 
     print("Setup END-----------")
 
@@ -67,7 +67,7 @@ def applyDecision(a):
 
 
 def reset():
-    pass
+    setup()
 
 
 def update_environment():
@@ -75,7 +75,7 @@ def update_environment():
         for b in core.memory('agents'):
             if (a.body.position.distance_to(b.body.position) - a.body.taille_body) <= COLLISION_RADIUS:
                 if isinstance(a, Decomposeur):
-                    if not(isinstance(b, Decomposeur)):
+                    if not (isinstance(b, Decomposeur)):
                         if b.body.mort is True:
                             if b.body.decomposition < 100:
                                 b.body.decomposer()
@@ -86,8 +86,10 @@ def update_environment():
                                 core.memory('agents').remove(b)
                 if isinstance(a, Carnivore):
                     if isinstance(b, Herbivore):
+                        a.body.faim_valeur -= VALEUR_NUTRITIVE
                         b.body.kill()
                     if isinstance(b, SuperPredateur):
+                        a.body.faim_valeur -= VALEUR_NUTRITIVE
                         a.body.kill()
         for item in core.memory('items'):
             if (a.body.position.distance_to(item.position) - a.body.taille_body) <= COLLISION_RADIUS:
@@ -95,8 +97,17 @@ def update_environment():
                     core.memory('items').remove(item)
 
 
+def load(path):
+    f = open(path)
+    data = json.load(f)
+    core.memory("scenario", data)
+
+
 def run():
     core.cleanScreen()
+
+    if core.getKeyPressList("r"):
+        reset()
 
     for item in core.memory("items"):
         item.show()

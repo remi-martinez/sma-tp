@@ -1,0 +1,50 @@
+{
+  "duréeSimu": 600,
+  "SuperPredateur": {
+    "nb": 2,
+    "parametres": {
+      "vitesseMax": [
+        "min",
+        "max"
+      ],
+      "accelerationMax": [
+        "min",
+        "max"
+      ],
+      "faimMax": [
+        "min",
+        "max"
+      ],
+      "fatigueMax": [
+        "min",
+        "max"
+      ],
+      "reproductionMax": [
+        "min",
+        "max"
+      ],
+      "esperanceVie": [
+        "min",
+        "max"
+      ]
+    }
+  },
+    "Herbivore": {
+      "nb": 12,
+      "parametres": {
+        "vitesseMax": [
+          "min",
+          "max"
+        ],
+        "accelerationMax": [
+          "min",
+          "max"
+        ],
+        "MaxFaim": [
+          "min",
+          "max"
+        ],
+        "..."
+      },
+      ...
+    }

@@ -5,6 +5,7 @@ from pygame import Vector2
 
 import core
 from fustrum import Fustrum
+from heart import Heart
 
 
 class Body(object):
@@ -13,6 +14,7 @@ class Body(object):
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.fustrum = Fustrum(100, self)
         self.label = None
+        self.type = None
 
         self.vitesse = Vector2(5, 5)
         self.vitesse_max = 5
@@ -59,13 +61,19 @@ class Body(object):
             self.dort = False
             self.label = None
 
-        # Affamé
-        if self.faim_valeur >= self.faim_max:
+        # Affamé à partir de 80%
+        if self.faim_valeur >= self.faim_max * 0.80:
             self.affame = True
             self.label = 'AFFAMÉ'
 
+        # Affamé à 100% = mort
+        if self.faim_valeur >= self.faim_max:
+            self.kill()
+
         # Reproduction
         if self.reproduction_valeur >= self.reproduction_max:
+            self.reproduction()
+            self.reproduction_valeur = 0
             self.reproduire = True
 
         # Jauges
@@ -106,7 +114,18 @@ class Body(object):
             self.vitesse.y *= -1
 
     def kill(self):
+        self.label = None
         self.mort = True
+
+    def reproduction(self):
+        cloned_body = type(self)()
+        cloned_body.position.x = self.position.x
+        cloned_body.position.y = self.position.y
+
+        heart = Heart(Vector2(self.position.x, self.position.y))
+        core.memory('hearts').append(heart)
+
+        return cloned_body
 
     def decomposer(self):
         self.decomposition += 1
