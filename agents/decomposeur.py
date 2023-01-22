@@ -1,8 +1,7 @@
-import random
-
-from pygame.math import Vector2
+import core
 
 from agents.agent import Agent
+from items.vegetal import Vegetal
 
 
 class Decomposeur(Agent):
@@ -11,25 +10,15 @@ class Decomposeur(Agent):
         self.body.color = (194, 168, 19)
 
     def update(self):
-        manger, fuir, symbiose = self.filtrePerception()
-
-        target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
-        while target.length() == 0:
-            target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
-
-        if len(fuir) > 0:
-            target = self.body.position - fuir[0].position
-
-        if len(symbiose) > 0:
-            target = symbiose[0].position - self.body.position
-
-        if len(manger) > 0:
-            target = manger[0].position - self.body.position
-
-
-        self.body.acceleration = self.body.acceleration + target
+        super().update()
+        if self.body.mort is True:
+            core.memory('agents').remove(self)
+            nouveau_vegetal = Vegetal()
+            nouveau_vegetal.position = self.body.position
+            core.memory('items').append(nouveau_vegetal)
 
     def filtrePerception(self):
+        super().filtrePerception()
         manger = []
         fuir = []
         symbiose = []
@@ -41,4 +30,3 @@ class Decomposeur(Agent):
 
         manger.sort(key=lambda x: x.dist, reverse=False)
         return manger, fuir, symbiose
-

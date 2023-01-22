@@ -6,6 +6,7 @@ from bodies.body import Body
 
 from utils import parametre_aleatoire
 
+
 class DecomposeurBody(Body):
     def __init__(self):
         super().__init__()

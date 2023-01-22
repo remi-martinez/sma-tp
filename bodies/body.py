@@ -1,6 +1,7 @@
 import random
 import time
 
+from numpy import average
 from pygame import Vector2
 
 import core
@@ -144,3 +145,13 @@ class Body(object):
         self.decomposition += 1
         if self.decomposition > 100:
             self.decomposition = 0
+
+    def moyenne_genetique(self):
+        """
+        :return: Moyenne pondérée de la génétique de l'individu
+        """
+        return average([self.vitesse_max,
+                        self.acceleration_max,
+                        self.faim_max,
+                        self.fatigue_max,
+                        self.esperance_vie], weights=[4, 4, 2, 3, 4])

@@ -22,7 +22,7 @@ def setup():
     print("Setup START---------")
     core.fps = 30
 
-    core.WINDOW_SIZE = [500, 500]
+    core.WINDOW_SIZE = [600, 600]
 
     core.memory("agents", [])
     core.memory("items", [])
@@ -81,6 +81,8 @@ def update_environment():
             if (a.body.position.distance_to(b.body.position) - a.body.taille_body) <= COLLISION_RADIUS:
                 if isinstance(a, Decomposeur):
                     if not (isinstance(b, Decomposeur)):
+                        # Un décomposeur se nourrit du cadavre
+                        # puis un végétal pousse à la place une fois le processus terminé
                         if b.body.mort is True:
                             if b.body.decomposition < 100:
                                 b.body.decomposer()
@@ -125,18 +127,29 @@ def pourcentage_population():
     # Afficher le pourcentage de chaque type d'agent
     total = len([a for a in core.memory('agents') if a.body.mort is False])
     for agent_type, count in counts.items():
-        percentage = count / total * 100
-        print(f"{agent_type}: {percentage:.2f}%")
+        pourcentage = count / total * 100
+        print(f"{agent_type}: {pourcentage:.2f}%")
 
 
 def meilleur_individu():
-    # TODO
-    return ''
+    meilleure_genetique = 0
+    meilleur_individu = None
+    for agent in core.memory('agents'):
+        if agent.body.mort is False:
+            if agent.body.moyenne_genetique() > meilleure_genetique:
+                meilleure_genetique = agent.body.moyenne_genetique()
+                meilleur_individu = agent
+
+    if meilleur_individu is None:
+        return "Aucun"
+
+    return f"{meilleur_individu.body.type} ({meilleur_individu.uuid})"
 
 
 def run():
     core.cleanScreen()
 
+    # Appuyer sur 'R' pour relancer la simulation
     if core.getKeyPressList("r"):
         reset()
 

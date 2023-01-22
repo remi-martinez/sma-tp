@@ -1,9 +1,9 @@
 import core
-import random
 from agents.superpredateur import SuperPredateur
 from bodies.body import Body
 
 from utils import parametre_aleatoire
+
 
 class SuperPredateurBody(Body):
     def __init__(self):

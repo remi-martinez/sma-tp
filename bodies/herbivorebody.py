@@ -4,6 +4,7 @@ from bodies.body import Body
 
 from utils import parametre_aleatoire
 
+
 class HerbivoreBody(Body):
     def __init__(self):
         super().__init__()

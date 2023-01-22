@@ -4,6 +4,7 @@ from agents.carnivore import Carnivore
 
 from utils import parametre_aleatoire
 
+
 class CarnivoreBody(Body):
     def __init__(self):
         super().__init__()

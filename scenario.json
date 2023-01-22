@@ -11,7 +11,7 @@
       "faimMax": [90, 100],
       "fatigueMax": [120, 150],
       "reproductionMax": [170, 200],
-      "esperanceMax": [40, 50]
+      "esperanceMax": [200, 300]
     }
   },
   "Carnivore": {
@@ -22,7 +22,7 @@
       "faimMax": [90, 100],
       "fatigueMax": [120, 150],
       "reproductionMax": [170, 200],
-      "esperanceMax": [40, 50]
+      "esperanceMax": [130, 200]
     }
   },
   "Herbivore": {
@@ -33,7 +33,7 @@
       "faimMax": [90, 100],
       "fatigueMax": [120, 150],
       "reproductionMax": [170, 200],
-      "esperanceMax": [40, 50]
+      "esperanceMax": [90, 110]
     }
   },
   "Decomposeur": {
@@ -43,8 +43,8 @@
       "accelerationMax": [1, 3],
       "faimMax": [90, 100],
       "fatigueMax": [120, 150],
-      "reproductionMax": [80, 90],
-      "esperanceMax": [10, 10]
+      "reproductionMax": [110, 120],
+      "esperanceMax": [400, 500]
     }
   }
 }

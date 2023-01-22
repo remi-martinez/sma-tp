@@ -10,12 +10,33 @@ class Agent(object):
         self.perceptionList = []
 
     def update(self):
-        # TODO
-        self.filtrePerception()
+        manger, fuir, symbiose = self.filtrePerception()
+
+        manger.sort(key=lambda x: x.dist, reverse=False)
+        fuir.sort(key=lambda x: x.dist, reverse=False)
+        symbiose.sort(key=lambda x: x.dist, reverse=False)
+
+        target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
+        while target.length() == 0:
+            target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
+
+        # Fuite = priorité MIN
+        if len(symbiose) > 0:
+            target = symbiose[0].position - self.body.position
+
+        # Fuite = priorité MOYENNE
+        if len(manger) > 0:
+            target = manger[0].position - self.body.position
+
+        # Fuite = priorité MAX
+        if len(fuir) > 0:
+            target = self.body.position - fuir[0].position
+
+        self.body.acceleration = self.body.acceleration + target
 
     def filtrePerception(self):
-        # TODO
-        pass
+        # Le filtre de perception sera 'override' par les classes enfants Carnivore, Decomposeur, etc
+        return [], [], []
 
     def show(self):
         self.body.show()
