@@ -1,7 +1,3 @@
-import random
-
-from pygame import Vector2
-
 from agents.agent import Agent
 
 

@@ -1,11 +1,6 @@
-import random
-
-from pygame import Vector2
-
 from agents.agent import Agent
 from agents.superpredateur import SuperPredateur
 from bodies.carnivorebody import CarnivoreBody
-from bodies.decomposeurbody import DecomposeurBody
 from items.vegetal import Vegetal
 
 
@@ -34,4 +29,3 @@ class Herbivore(Agent):
                     symbiose.append(i)
 
         return manger, fuir, symbiose
-

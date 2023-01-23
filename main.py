@@ -1,8 +1,9 @@
 import json
+import threading
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pygame import time as pygtime
+from pygame import time as pygtime, Vector2
 
 import core
 from agents.carnivore import Carnivore
@@ -16,15 +17,16 @@ from bodies.superpredateurbody import SuperPredateurBody
 from items.vegetal import Vegetal
 
 COLLISION_RADIUS = 10
-VALEUR_NUTRITIVE = 30
+VALEUR_NUTRITIVE = 50
 DEBUT_SIMU = 0
+AGENT_SELECTION = None
 
 
 def setup():
     print("Setup START---------")
     core.fps = 30
 
-    core.WINDOW_SIZE = [600, 600]
+    core.WINDOW_SIZE = [800, 800]
 
     core.memory("agents", [])
     core.memory("items", [])
@@ -50,7 +52,7 @@ def setup():
         core.memory('items').append(Vegetal())
 
     # Démarrage d'un thread parallèle pour le graphique
-    # threading.Thread(target=afficher_graph, args=()).start()
+    threading.Thread(target=afficher_graph, args=()).start()
 
     print("Setup END-----------")
 
@@ -100,13 +102,14 @@ def update_environment():
                 if isinstance(a, Carnivore):
                     if isinstance(b, Herbivore):
                         a.body.faim_valeur -= VALEUR_NUTRITIVE
-                        b.body.kill()
+                        b.body.meurt()
                     if isinstance(b, SuperPredateur):
                         a.body.faim_valeur -= VALEUR_NUTRITIVE
-                        a.body.kill()
+                        a.body.meurt()
         for item in core.memory('items'):
             if (a.body.position.distance_to(item.position) - a.body.taille_body) <= COLLISION_RADIUS:
                 if isinstance(a, Herbivore):
+                    a.body.faim_valeur -= VALEUR_NUTRITIVE
                     core.memory('items').remove(item)
 
 
@@ -162,7 +165,7 @@ def afficher_graph():
         plt.yticks(y_pos, labels=donnees.keys())
         plt.gca().invert_yaxis()  # labels read top-to-bottom
         plt.xlabel("Nombre d'individus")
-        plt.title("Population en temps réel")
+        plt.title(f"Population en temps réel ({temps_simu():.0f}s)")
 
         # Formatter les labels de l'axe des ordonnées
         for i, v in enumerate(donnees.values()):
@@ -175,7 +178,7 @@ def afficher_graph():
         plt.pause(0.1)
 
 
-def meilleur_individu():
+def trouver_meilleur_individu():
     meilleure_genetique = 0
     meilleur_individu = None
     for agent in core.memory('agents'):
@@ -194,12 +197,38 @@ def temps_simu():
     return (pygtime.get_ticks() - DEBUT_SIMU) / 1000
 
 
+def agent_proche_souris(mouse):
+    mouse_vect = Vector2(mouse[0], mouse[1])
+    min_dist = 999999
+    selected_agent = None
+    for a in core.memory('agents'):
+        if mouse_vect.distance_to(a.body.position) < 30:
+            if mouse_vect.distance_to(a.body.position) < min_dist:
+                min_dist = mouse_vect.distance_to(a.body.position)
+                selected_agent = a
+    return selected_agent
+
+
 def run():
     core.cleanScreen()
 
-    # Appuyer sur 'R' pour relancer la simulation
-    if core.getKeyPressList("r"):
+    # Appuyer sur 'R' pour relancer la simulation OU temps indiqué dans le scenario.json
+    if core.getKeyPressList("r") or temps_simu() > core.memory('scenario')['dureeSimu']:
         reset()
+
+    # Clic gauche pour sélectionner un agent
+    global AGENT_SELECTION
+    if core.getMouseLeftClick():
+        agent = agent_proche_souris(core.getMouseLeftClick())
+        if agent is not None:
+            AGENT_SELECTION = agent
+            agent.body.selection = True
+
+    # Clic droit pour désélectionner tous les agents
+    if core.getMouseRightClick():
+        AGENT_SELECTION = None
+        for a in core.memory('agents'):
+            a.body.selection = False
 
     for item in core.memory("items"):
         item.show()
@@ -227,7 +256,7 @@ def run():
         pourcentage_population()
         core.memory("timer", pygtime.get_ticks())
 
-        print("MEILLEUR INDIVIDU : " + meilleur_individu())
+        print("MEILLEUR INDIVIDU : " + trouver_meilleur_individu())
 
 
 core.main(setup, run)

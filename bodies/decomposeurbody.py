@@ -3,7 +3,6 @@ from pygame import Vector2
 import core
 from agents.decomposeur import Decomposeur
 from bodies.body import Body
-
 from utils import parametre_aleatoire
 
 
@@ -14,6 +13,7 @@ class DecomposeurBody(Body):
         self.vitesse_max = parametre_aleatoire(self.type, 'vitesseMax') or self.vitesse_max
         self.acceleration_max = parametre_aleatoire(self.type, 'accelerationMax') or self.acceleration_max
         self.faim_max = parametre_aleatoire(self.type, 'faimMax') or self.faim_max
+        self.fatigue_max = parametre_aleatoire(self.type, 'fatigueMax') or self.fatigue_max
         self.reproduction_max = parametre_aleatoire(self.type, 'reproductionMax') or self.reproduction_max
         self.esperance_vie = parametre_aleatoire(self.type, 'esperanceMax') or self.esperance_vie
 
@@ -22,6 +22,7 @@ class DecomposeurBody(Body):
 
     def show(self):
         super().show_text()
+
         a = 0 - self.vitesse.angle_to(Vector2(0, 1))
 
         p1 = self.position + Vector2(-5, 0).rotate(a)
@@ -29,6 +30,10 @@ class DecomposeurBody(Body):
         p3 = self.position + Vector2(5, 0).rotate(a)
 
         core.Draw.polygon(self.color, (p1, p2, p3))
+
+        if self.selection is True:
+            self.show_hud()
+            core.Draw.polygon((255, 255, 255), (p1, p2, p3), width=3)
 
     def reproduction(self):
         cloned_body = super().reproduction()

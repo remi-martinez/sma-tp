@@ -1,7 +1,8 @@
 import random
-import core
 
 from pygame import Vector2
+
+import core
 
 
 class Vegetal:
