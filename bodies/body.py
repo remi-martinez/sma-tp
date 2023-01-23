@@ -11,7 +11,9 @@ from heart import Heart
 
 class Body(object):
     def __init__(self):
-        self.position = Vector2(random.randint(0, core.WINDOW_SIZE[0]), random.randint(0, core.WINDOW_SIZE[1]))
+        self.taille_body = 10
+        self.position = Vector2(random.randint(0 + self.taille_body, core.WINDOW_SIZE[0] - self.taille_body),
+                                random.randint(0 + self.taille_body, core.WINDOW_SIZE[1] - self.taille_body))
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         self.fustrum = Fustrum(100, self)
         self.label = None
@@ -21,8 +23,8 @@ class Body(object):
         self.vitesse_max = 5
         self.acceleration = Vector2()
         self.acceleration_max = 1
-        self.taille_body = 10
 
+        self.valeur_nutritive = 30
         self.faim_max = 100
         self.faim_valeur = 0
         self.affame = False
@@ -46,7 +48,7 @@ class Body(object):
             self.color = (138, 138, 138)
             return
         elif self.date_naissance + self.esperance_vie <= time.time():
-            self.kill()
+            self.meurt()
 
         # Dormir
         if self.dort is True and self.fatigue_valeur > 0:
@@ -68,7 +70,7 @@ class Body(object):
 
         # Affamé à 100% = mort
         if self.faim_valeur >= self.faim_max:
-            self.kill()
+            self.meurt()
 
         # Reproduction
         if self.reproduction_valeur >= self.reproduction_max:
@@ -127,7 +129,7 @@ class Body(object):
         if self.position.y + self.taille_body >= core.WINDOW_SIZE[1]:
             self.vitesse.y *= -1
 
-    def kill(self):
+    def meurt(self):
         self.label = None
         self.mort = True
 
@@ -145,6 +147,10 @@ class Body(object):
         self.decomposition += 1
         if self.decomposition > 100:
             self.decomposition = 0
+
+    def manger(self, other_body):
+        self.faim_valeur -= other_body.valeur_nutritive
+        other_body.meurt()
 
     def moyenne_genetique(self):
         """

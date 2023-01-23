@@ -12,6 +12,7 @@ class Agent(object):
     def update(self):
         manger, fuir, symbiose = self.filtrePerception()
 
+        # Trier le filtre de perception par distance
         manger.sort(key=lambda x: x.dist, reverse=False)
         fuir.sort(key=lambda x: x.dist, reverse=False)
         symbiose.sort(key=lambda x: x.dist, reverse=False)
@@ -20,15 +21,15 @@ class Agent(object):
         while target.length() == 0:
             target = Vector2(random.randint(-1, 1), random.randint(-1, 1))
 
-        # Fuite = priorité MIN
+        # "Symbiose" = priorité MIN
         if len(symbiose) > 0:
             target = symbiose[0].position - self.body.position
 
-        # Fuite = priorité MOYENNE
+        # "Mangeur" = priorité MOYENNE
         if len(manger) > 0:
             target = manger[0].position - self.body.position
 
-        # Fuite = priorité MAX
+        # "Survie" (fuite) = priorité MAX
         if len(fuir) > 0:
             target = self.body.position - fuir[0].position
 

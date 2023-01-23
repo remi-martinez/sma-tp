@@ -21,3 +21,7 @@ class CarnivoreBody(Body):
     def reproduction(self):
         cloned_body = super().reproduction()
         core.memory('agents').append(Carnivore(cloned_body))
+
+    def manger(self, other_body):
+        if other_body.type == 'Herbivore':
+            super().manger(other_body)

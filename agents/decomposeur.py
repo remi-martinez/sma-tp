@@ -28,5 +28,4 @@ class Decomposeur(Agent):
             if i.mort is True:
                 manger.append(i)
 
-        manger.sort(key=lambda x: x.dist, reverse=False)
         return manger, fuir, symbiose
