@@ -1,7 +1,7 @@
 {
   "dureeSimu": 60,
   "Vegetal": {
-    "nb": 20
+    "nb": 25
   },
   "SuperPredateur": {
     "nb": 5,
